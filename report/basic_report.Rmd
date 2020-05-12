@@ -1,0 +1,379 @@
+---
+title: "基礎集計"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = F, echo = F, message = F, fig.align = "center", fig.width = 7, fig.height = 5)
+
+library(tidyverse)
+library(formattable)
+```
+
+```{r}
+df.train <- readr::read_csv(
+  file = "../data/01.input/train_data.csv",
+  col_types = cols(
+    id = col_integer(),
+    video_id = col_character(),
+    title = col_character(),
+    publishedAt = col_datetime(format = ""),
+    channelId = col_character(),
+    channelTitle = col_character(),
+    categoryId = col_double(),
+    collection_date = col_character(),
+    tags = col_character(),
+    likes = col_integer(),
+    dislikes = col_integer(),
+    comment_count = col_integer(),
+    thumbnail_link = col_character(),
+    comments_disabled = col_logical(),
+    ratings_disabled = col_logical(),
+    description = col_character(),
+    y = col_integer()
+  )
+)
+```
+
+# メモ
+
+- コラボは上がるはず(判定可能？)
+- 国内/海外 の判定は可能？(O)
+
+# 全体概要
+
+- レコード数: `r formattable::comma(nrow(df.train), digits = 0)`
+
+```{r}
+df.train %>%
+  ggplot(aes(y)) +
+    geom_histogram(colour = "white") +
+    scale_x_log10()
+```
+
+
+# タイトル
+
+## 文字数
+
+```{r}
+df.train %>%
+  dplyr::mutate(
+    titlesize = stringr::str_length(title)
+  ) %>%
+  ggplot(aes(titlesize, y)) +
+    geom_point(size = 0.5, alpha = 1/5) +
+    geom_smooth() +
+    scale_y_log10()
+```
+
+
+# 投稿曜日
+
+```{r}
+df.train %>%
+  dplyr::mutate(published_dow = lubridate::wday(publishedAt, label = T, abbr = T, locale = "C")) %>%
+  dplyr::count(published_dow) %>%
+  ggplot(aes(published_dow, n)) +
+    geom_col()
+```
+
+```{r}
+df.train %>%
+  dplyr::mutate(published_dow = lubridate::wday(publishedAt, label = T, abbr = T, locale = "C")) %>%
+  ggplot(aes(published_dow, y)) +
+    geom_boxplot() +
+    scale_y_log10()
+```
+
+
+
+## 投稿月
+
+```{r, fig.height=10}
+df.train %>%
+  dplyr::mutate(published_month = lubridate::month(publishedAt)) %>%
+  ggplot(aes(y)) +
+    geom_histogram(aes(y = ..density..), colour = "white") +
+    geom_density(aes(fill = factor(published_month)), alpha = 1/3) +
+    scale_x_log10() +
+    facet_grid(published_month ~ ., scales = "free_y")
+```
+
+## 投稿年
+
+```{r}
+df.train %>%
+  dplyr::mutate(published_year = lubridate::year(publishedAt)) %>%
+  ggplot(aes(y)) +
+    geom_histogram(aes(y = ..density..), colour = "white") +
+    geom_density(aes(fill = factor(published_year)), alpha = 1/3) +
+    scale_x_log10() +
+    facet_grid(published_year ~ ., scales = "free_y")
+```
+
+```{r}
+df.train %>%
+  dplyr::mutate(published_year = lubridate::year(publishedAt)) %>%
+  ggplot(aes(published_year, y)) +
+    geom_point(size = 0.5, alpha = 1/5) +
+    geom_smooth() +
+    scale_y_log10()
+```
+
+
+
+# 投稿時間帯の分布
+
+タイムゾーンとか国内/海外の違いがあるんじゃないかと思う
+
+```{r}
+df.train %>%
+  dplyr::mutate(published_hour = lubridate::hour(publishedAt)) %>%
+  dplyr::count(published_hour) %>%
+  ggplot(aes(published_hour, n)) +
+    geom_col() +
+    scale_x_continuous(breaks = 0:23, labels = 0:23)
+```
+
+```{r}
+df.train %>%
+  dplyr::mutate(published_hour = lubridate::hour(publishedAt)) %>%
+  ggplot(aes(factor(published_hour), y)) +
+    geom_boxplot() +
+    scale_y_log10()
+```
+
+
+# チャンネル ID ごと
+
+```{r}
+df.train %>%
+  dplyr::count(channelId) %>%
+  dplyr::count(n, name = "channel_count") %>%
+  ggplot(aes(n, channel_count)) +
+    geom_col()
+```
+
+## 〜 50
+
+- 大多数が 1 動画の投稿に留まっている
+- 再生回数が跳ねないと 1 回で飽きちゃうというのはあるかも
+
+```{r}
+df.train %>%
+  dplyr::count(channelId) %>%
+  dplyr::count(n, name = "channel_count") %>%
+  ggplot(aes(n, channel_count)) +
+    geom_col() +
+    coord_cartesian(xlim = c(NA, 50))
+```
+
+
+# 動画カテゴリ
+
+## カテゴリ数の分布
+
+- 10 が圧倒的
+
+```{r}
+df.train %>%
+  dplyr::count(categoryId) %>%
+  ggplot(aes(factor(categoryId), n)) +
+    geom_col()
+```
+
+## カテゴリ毎の視聴回数の分布
+
+```{r}
+df.train %>%
+  ggplot(aes(factor(categoryId), y)) +
+    geom_boxplot() +
+    scale_y_log10()
+```
+
+# タグ
+
+## 文字数
+
+```{r}
+df.train %>%
+  dplyr::mutate(
+    tagsize = ifelse(tags == "[none]", 0L, stringr::str_length(tags))
+  ) %>%
+  ggplot(aes(tagsize, y)) +
+    geom_point(size = 0.5, alpha = 1/5) +
+    geom_smooth() +
+    scale_x_log10() +
+    scale_y_log10()
+```
+
+## タグ数
+
+```{r}
+df.train %>%
+  dplyr::mutate(
+    tag_count = ifelse(tags == "[none]", 0, stringr::str_count(tags, pattern = "\\|") + 1)
+  ) %>%
+  ggplot(aes(tag_count, y)) +
+    geom_point(size = 0.5, alpha = 1/5) +
+    scale_x_log10() +
+    scale_y_log10()
+```
+
+
+# Likes / Dislikes
+
+```{r}
+df.train %>%
+  dplyr::select(likes, dislikes, y) %>%
+  tidyr::pivot_longer(cols = -y, names_to = "type", values_to = "count") %>%
+  ggplot(aes(count, y)) +
+    geom_point(aes(colour = type), size = 0.5, alpha = 1/5) +
+    scale_x_log10() +
+    scale_y_log10()
+```
+
+## 差
+
+### 差の分布
+
+```{r}
+df.train %>%
+  dplyr::mutate(delta = likes - dislikes) %>%
+  ggplot(aes(delta)) +
+    geom_histogram(colour = "white") +
+    scale_x_log10()
+```
+
+## 差と視聴回数
+
+```{r}
+df.train %>%
+  dplyr::mutate(delta = likes - dislikes) %>%
+  ggplot(aes(delta, y)) +
+    geom_point(size = 0.5, alpha = 1/5) +
+    scale_x_log10() +
+    scale_y_log10()
+```
+
+
+## 比率
+
+```{r}
+df.train %>%
+  dplyr::mutate(ratio = likes / dislikes) %>%
+  ggplot(aes(ratio)) +
+    geom_histogram(colour = "white") +
+    scale_x_log10()
+```
+
+```{r}
+df.train %>%
+  dplyr::mutate(ratio = likes / dislikes) %>%
+  ggplot(aes(ratio, y)) +
+    geom_point(size = 0.5, alpha = 1/5) +
+    scale_x_log10() +
+    scale_y_log10()
+```
+
+
+# コメント数
+
+```{r}
+df.train %>%
+  ggplot(aes(comment_count)) +
+    geom_histogram(colour = "white") +
+    scale_x_log10()
+```
+
+
+```{r}
+df.train %>%
+  ggplot(aes(comment_count, y)) +
+    geom_point(size = 0.5, alpha = 1/5) +
+    scale_x_log10() +
+    scale_y_log10()
+```
+
+
+# コメント不可
+
+```{r}
+df.train %>%
+  dplyr::count(comments_disabled) %>%
+  dplyr::mutate(ratio = formattable::percent(n / sum(n), digits = 0))
+```
+
+- コメント不可の時に 2 群に分かれるのでは？
+
+```{r}
+df.train %>%
+  ggplot(aes(y)) +
+    geom_histogram(aes(y = ..density..), colour = "white") +
+    geom_density(aes(fill = comments_disabled), alpha = 1/3) +
+    scale_x_log10() +
+    facet_grid(comments_disabled ~ ., scales = "free_y")
+```
+
+
+# 評価不可
+
+```{r}
+df.train %>%
+  dplyr::count(ratings_disabled) %>%
+  dplyr::mutate(ratio = formattable::percent(n / sum(n), digits = 0))
+```
+
+- コメント不可の時に 2 群に分かれるのでは？
+
+```{r}
+df.train %>%
+  ggplot(aes(y)) +
+    geom_histogram(aes(y = ..density..), colour = "white") +
+    geom_density(aes(fill = ratings_disabled), alpha = 1/3) +
+    scale_x_log10() +
+    facet_grid(ratings_disabled ~ ., scales = "free_y")
+```
+
+
+# 説明文
+
+```{r}
+df.train %>%
+  dplyr::mutate(desc_size = stringr::str_length(description)) %>%
+  ggplot(aes(desc_size, y)) +
+    geom_point(size = 0.5, alpha = 1/5) +
+    scale_x_log10() +
+    scale_y_log10()
+```
+
+
+# 日本語
+
+```{r}
+df.train %>%
+  dplyr::mutate(
+    tags = coalesce(tags, ""),
+    description = coalesce(description, ""),
+    flg_japanese = stringr::str_c(title, channelTitle, tags, description, sep = "") %>%
+      stringr::str_detect(pattern = "\\p{Hiragana}|\\p{Katakana}|\\p{Han}")
+  ) %>%
+  dplyr::count(flg_japanese) %>%
+  dplyr::mutate(ratio = formattable::percent(n / sum(n), digits = 0))
+```
+
+
+```{r}
+df.train %>%
+  dplyr::mutate(
+    tags = coalesce(tags, ""),
+    description = coalesce(description, ""),
+    flg_japanese = stringr::str_c(title, channelTitle, tags, description, sep = "") %>%
+      stringr::str_detect(pattern = "\\p{Hiragana}|\\p{Katakana}|\\p{Han}")
+  ) %>%
+  ggplot(aes(flg_japanese, y)) +
+    geom_boxplot() +
+    scale_y_log10()
+```
+
