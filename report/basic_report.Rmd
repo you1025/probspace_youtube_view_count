@@ -11,28 +11,8 @@ library(formattable)
 ```
 
 ```{r}
-df.train <- readr::read_csv(
-  file = "../data/01.input/train_data.csv",
-  col_types = cols(
-    id = col_integer(),
-    video_id = col_character(),
-    title = col_character(),
-    publishedAt = col_datetime(format = ""),
-    channelId = col_character(),
-    channelTitle = col_character(),
-    categoryId = col_double(),
-    collection_date = col_character(),
-    tags = col_character(),
-    likes = col_integer(),
-    dislikes = col_integer(),
-    comment_count = col_integer(),
-    thumbnail_link = col_character(),
-    comments_disabled = col_logical(),
-    ratings_disabled = col_logical(),
-    description = col_character(),
-    y = col_integer()
-  )
-)
+source("../functions.R", encoding = "utf-8")
+df.train <- load_train_data("../data/01.input/train_data.csv") %>% clean()
 ```
 
 # メモ
@@ -141,6 +121,21 @@ df.train %>%
   dplyr::mutate(published_hour = lubridate::hour(publishedAt)) %>%
   ggplot(aes(factor(published_hour), y)) +
     geom_boxplot() +
+    scale_y_log10()
+```
+
+# 投稿日からの経過日数
+
+思ってたより差がない・・・
+
+```{r}
+df.train %>%
+  dplyr::mutate(
+    days_from_published = (collection_date - lubridate::as_date(publishedAt)) %>% as.integer
+  ) %>%
+  ggplot(aes(days_from_published, y)) +
+    geom_point(size = 0.5, alpha = 1/5) +
+    geom_smooth() +
     scale_y_log10()
 ```
 
