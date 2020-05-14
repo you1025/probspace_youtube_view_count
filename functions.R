@@ -72,3 +72,13 @@ clean <- function(df) {
 }
 #load_train_data("data/01.input/train_data.csv") %>% clean()
 #load_test_data("data/01.input/train_data.csv") %>% clean()
+
+# CV 作成
+create_cv <- function(df, v = 5, seed = 2851) {
+  
+  set.seed(seed)
+  
+  df %>%
+    
+    rsample::vfold_cv(v = v, strata = "categoryId")
+}
