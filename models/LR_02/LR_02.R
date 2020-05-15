@@ -62,9 +62,9 @@ model <- parsnip::linear_reg(
 df.grid.params <- dials::grid_regular(
 #  dials::penalty(c(-2.777778, -2.777778)),
 #  dials::mixture(c(0.8611111, 0.8611111)),
-  dials::penalty(c(-2.9, -2.5)),
-  dials::mixture(c(0.8, 1.0)),
-  levels = 10
+  dials::penalty(c(-2.9, -2.9)),
+  dials::mixture(c(0.8888889, 0.8888889)),
+  levels = 1
 )
 df.grid.params
 

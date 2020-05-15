@@ -113,10 +113,10 @@ create_recipe <- function(data) {
 train_and_eval <- function(split, recipe, model) {
 
   # 前処理済データの作成
-  df.train <- recipes::prep(recipe, training = rsample::training(split)) %>%
-    recipes::juice()
-  df.test <- recipes::prep(recipe, rsample::testing(split)) %>%
-    recipes::juice()
+  trained_recipe <- recipes::prep(recipe, training = rsample::training(split))
+  df.train <- recipes::juice(trained_recipe)
+  df.test  <- recipes::bake(trained_recipe, rsample::testing(split))
+
 
   model %>%
 
@@ -169,7 +169,7 @@ train_and_eval <- function(split, recipe, model) {
           predicted = lst.predicted$test
         ) %>%
         metrics(
-          truth    = y,
+          truth    = log(y + 1),
           estimate = predicted
         ) %>%
         dplyr::select(-.estimator) %>%

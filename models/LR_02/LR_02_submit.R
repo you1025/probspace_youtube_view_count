@@ -44,7 +44,7 @@ recipe <- create_recipe(df.train_data)
     fit <- lst.results$model
     
     # 前処理済データの作成
-    df.test <- recipes::prep(recipe) %>%
+    df.test <- recipes::prep(recipe, training = df.train_data) %>%
       recipes::bake(df.test_data)
 
     # 予測結果データセット
