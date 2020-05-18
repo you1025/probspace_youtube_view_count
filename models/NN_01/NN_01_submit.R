@@ -19,19 +19,20 @@ recipe <- create_recipe(df.train_data)
 # モデルの学習と評価
 {
   # 訓練/検証 データの作成
-  lst.train_valid <- create_train_valid_data(df.train_data, recipe)
+  lst.train_valid <- create_train_valid_data(df.train_data, recipe, 5000)
 
   # モデル作成
   params <- list(
     layers = 3,
-    units = 64,
+    units = 32,
     activation = "relu",
-    l1 = 1e-05,
-    l2 = 1e-05,
+    l1 = 1e-03,
+    l2 = 1e-03,
     dropout_rate = 0.0,
     batch_size = 64
   )
-  model <- create_model_applied_parameters(params)
+  n <- lst.train_valid$x_train_train %>% ncol()
+  model <- create_model_applied_parameters(params, n)
 
   # Compile
   model %>% keras::compile(
@@ -54,11 +55,11 @@ recipe <- create_recipe(df.train_data)
     callbacks = list(
       keras::callback_early_stopping(
         monitor = "mse",
-        patience = 1
+        patience = 2
       )
     ),
     
-    epoch = 50,
+    epoch = 200,
     batch_size = params$batch_size,
     verbose = 1
   )

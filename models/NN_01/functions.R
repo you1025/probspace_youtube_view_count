@@ -104,7 +104,7 @@ create_recipe <- function(data) {
 
 
 # パラメータに応じたモデル生成
-create_model_applied_parameters <- function(params) {
+create_model_applied_parameters <- function(params, n) {
 
   # モデル定義: 1 階層目
   model <- keras::keras_model_sequential() %>%
@@ -115,13 +115,14 @@ create_model_applied_parameters <- function(params) {
         l1 = params$l1,
         l2 = params$l2
       ),
-      input_shape = c(57)
-    ) %>%
-    keras::layer_dropout(rate = params$dropout_rate)
+      input_shape = c(n)
+    )
 
   # 2 階層目以降
   for(k in 2:params$layers) {
     model <- model %>%
+      keras::layer_dropout(rate = params$dropout_rate) %>%
+      keras::layer_batch_normalization() %>%
       keras::layer_dense(
         units      = params$units,
         activation = params$activation,
@@ -129,8 +130,7 @@ create_model_applied_parameters <- function(params) {
           l1 = params$l1,
           l2 = params$l2
         )
-      ) %>%
-      keras::layer_dropout(rate = params$dropout_rate)
+      )
   }
 
   # 最終層
@@ -141,7 +141,7 @@ create_model_applied_parameters <- function(params) {
 }
 
 # 訓練用と検証用のデータ生成
-create_train_valid_data <- function(data, recipe, valid_row = 3000) {
+create_train_valid_data <- function(data, recipe, valid_row = 5000) {
 
   # 検証用の行番号を生成
   valid_indices <- sample(nrow(data), valid_row, replace = F)
@@ -173,7 +173,8 @@ train_and_eval_nn <- function(split, recipe, model, batch_size) {
 
   # Compile
   model %>% keras::compile(
-    optimizer = "rmsprop",
+#    optimizer = "rmsprop",
+    optimizer = keras::optimizer_adam(lr = 0.001),
     loss = "mse",
     metrics = c("mse")
   )
@@ -196,7 +197,7 @@ train_and_eval_nn <- function(split, recipe, model, batch_size) {
       )
     ),
 
-    epoch = 50,
+    epoch = 200,
     batch_size = batch_size,
     verbose = 0
   )
