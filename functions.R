@@ -67,7 +67,7 @@ clean <- function(df) {
       categoryId = forcats::fct_other(categoryId, drop = c(43, 44)),
 
       # Tags
-      tags = ifelse(tags == "[none]", NA, tags)
+      tags = dplyr::if_else(tags == "[none]", NA_character_, tags)
     )
 }
 #load_train_data("data/01.input/train_data.csv") %>% clean()
@@ -178,8 +178,8 @@ create_feature_engineerging_recipe <- function(data) {
       # 説明文
       flg_no_description = is.na(description),
       description_length = dplyr::if_else(is.na(description), 0L, stringr::str_length(description)),
-      flg_url   = ifelse(is.na(description), F, stringr::str_detect(description, pattern = "http(|s)://")),
-      url_count = ifelse(is.na(description), 0L, stringr::str_count(description, patter = "http(|s)://")),
+      flg_url   = dplyr::if_else(is.na(description), F, stringr::str_detect(description, pattern = "http(|s)://")),
+      url_count = dplyr::if_else(is.na(description), 0L, stringr::str_count(description, patter = "http(|s)://")),
 
 
       ### 複合指標 ###
@@ -190,7 +190,7 @@ create_feature_engineerging_recipe <- function(data) {
       # likes / dislikes
       diff_likes_dislikes = likes - dislikes,
       sum_likes_dislikes  = likes + dislikes,
-      ratio_likes = ifelse(likes+dislikes == 0, 0, likes / (likes + dislikes)),
+      ratio_likes = dplyr::if_else(likes+dislikes == 0, 0, likes / (likes + dislikes)),
 
       # comment_count / likes / dislikes
       sum_likes_dislikes_comments = likes + dislikes + comment_count,
