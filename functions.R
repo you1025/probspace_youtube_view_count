@@ -258,7 +258,24 @@ create_feature_engineerging_recipe <- function(data) {
       flg_comments_ratings_disabled_japanese_high      = (comments_ratings_disabled_japanese == "F_T_T"),
       flg_comments_ratings_disabled_japanese_very_high = (comments_ratings_disabled_japanese == "F_T_F"),
       flg_comments_ratings_disabled_japanese_low       = (comments_ratings_disabled_japanese %in% c("T_F_F", "T_T_T")),
-      flg_comments_ratings_disabled_japanese_very_low  = (comments_ratings_disabled_japanese == "T_T_F")
+      flg_comments_ratings_disabled_japanese_very_low  = (comments_ratings_disabled_japanese == "T_T_F"),
+
+      # PCA: likes / dislikes / comment_count
+      pc1 = prcomp(
+        tibble(
+          x1 = likes,
+          x2 = dislikes
+        ),
+        scale = T
+      )$x[,1],
+
+      # Special Segment
+      special_segment = dplyr::case_when(
+        ratings_disabled  ~ "ratings_disabled",
+        comment_count < 4 ~ "ratings_abled_low_comments",
+        T                 ~ "others"
+      ) %>%
+        factor(levels = c("others", "ratings_disabled", "ratings_abled_low_comments"))
     )
 }
 
@@ -463,6 +480,29 @@ add_features_per_category <- function(target_data, train_data) {
     add_feature_per_category(train_data, comments_ratings_disabled_japanese, y, max) %>%
     add_feature_per_category(train_data, comments_ratings_disabled_japanese, y, sd) %>%
 
+    # categoryId - pc1
+    add_feature_per_category(train_data, categoryId, pc1, mean) %>%
+    dplyr::mutate(
+      diff_categoryId_mean_pc1  = pc1 - categoryId_mean_pc1,
+      ratio_categoryId_mean_pc1 = pc1 / categoryId_mean_pc1
+    ) %>%
+    add_feature_per_category(train_data, categoryId, pc1, median) %>%
+    dplyr::mutate(
+      diff_categoryId_median_pc1  = pc1 - categoryId_median_pc1,
+      ratio_categoryId_median_pc1 = pc1 / categoryId_median_pc1
+    ) %>%
+    add_feature_per_category(train_data, categoryId, pc1, min) %>%
+    dplyr::mutate(
+      diff_categoryId_min_pc1  = pc1 - categoryId_min_pc1,
+      ratio_categoryId_min_pc1 = pc1 / categoryId_min_pc1
+    ) %>%
+    add_feature_per_category(train_data, categoryId, pc1, max) %>%
+    dplyr::mutate(
+      diff_categoryId_max_pc1  = pc1 - categoryId_max_pc1,
+      ratio_categoryId_max_pc1 = pc1 / categoryId_max_pc1
+    ) %>%
+    add_feature_per_category(train_data, categoryId, pc1, sd) %>%
+
     # categoryId - likes
     add_feature_per_category(train_data, categoryId, likes, mean) %>%
     dplyr::mutate(
@@ -532,6 +572,29 @@ add_features_per_category <- function(target_data, train_data) {
     ) %>%
     add_feature_per_category(train_data, categoryId, comment_count, sd) %>%
 
+    # comments_disabled - pc1
+    add_feature_per_category(train_data, comments_disabled, pc1, mean) %>%
+    dplyr::mutate(
+      diff_comments_disabled_mean_pc1  = pc1 - comments_disabled_mean_pc1,
+      ratio_comments_disabled_mean_pc1 = pc1 / comments_disabled_mean_pc1
+    ) %>%
+    add_feature_per_category(train_data, comments_disabled, pc1, median) %>%
+    dplyr::mutate(
+      diff_comments_disabled_median_pc1  = pc1 - comments_disabled_median_pc1,
+      ratio_comments_disabled_median_pc1 = pc1 / comments_disabled_median_pc1
+    ) %>%
+    add_feature_per_category(train_data, comments_disabled, pc1, min) %>%
+    dplyr::mutate(
+      diff_comments_disabled_min_pc1  = pc1 - comments_disabled_min_pc1,
+      ratio_comments_disabled_min_pc1 = pc1 / comments_disabled_min_pc1
+    ) %>%
+    add_feature_per_category(train_data, comments_disabled, pc1, max) %>%
+    dplyr::mutate(
+      diff_comments_disabled_max_pc1  = pc1 - comments_disabled_max_pc1,
+      ratio_comments_disabled_max_pc1 = pc1 / comments_disabled_max_pc1
+    ) %>%
+    add_feature_per_category(train_data, comments_disabled, pc1, sd) %>%
+
     # comments_disabled - likes
     add_feature_per_category(train_data, comments_disabled, likes, mean) %>%
     dplyr::mutate(
@@ -600,6 +663,29 @@ add_features_per_category <- function(target_data, train_data) {
       ratio_ratings_disabled_max_comment_count = comment_count / ratings_disabled_max_comment_count
     ) %>%
     add_feature_per_category(train_data, ratings_disabled, comment_count, sd) %>%
+
+    # published_year - pc1
+    add_feature_per_category(train_data, published_year, pc1, mean) %>%
+    dplyr::mutate(
+      diff_published_year_mean_pc1  = pc1 - published_year_mean_pc1,
+      ratio_published_year_mean_pc1 = pc1 / published_year_mean_pc1
+    ) %>%
+    add_feature_per_category(train_data, published_year, pc1, median) %>%
+    dplyr::mutate(
+      diff_published_year_median_pc1  = pc1 - published_year_median_pc1,
+      ratio_published_year_median_pc1 = pc1 / published_year_median_pc1
+    ) %>%
+    add_feature_per_category(train_data, published_year, pc1, min) %>%
+    dplyr::mutate(
+      diff_published_year_min_pc1  = pc1 - published_year_min_pc1,
+      ratio_published_year_min_pc1 = pc1 / published_year_min_pc1
+    ) %>%
+    add_feature_per_category(train_data, published_year, pc1, max) %>%
+    dplyr::mutate(
+      diff_published_year_max_pc1  = pc1 - published_year_max_pc1,
+      ratio_published_year_max_pc1 = pc1 / published_year_max_pc1
+    ) %>%
+    add_feature_per_category(train_data, published_year, pc1, sd) %>%
 
     # published_year - likes
     add_feature_per_category(train_data, published_year, likes, mean) %>%
@@ -791,6 +877,8 @@ add_features_per_category <- function(target_data, train_data) {
 
 # モデルの構築と評価
 train_and_eval <- function(split, recipe, model, formula) {
+
+  options("dplyr.summarise.inform" = F)
 
   # 前処理済データの作成
   trained_recipe <- recipes::prep(recipe, training = rsample::training(split))
