@@ -717,7 +717,7 @@ add_features_per_category <- function(target_data, train_data) {
 # Train & Evaluate --------------------------------------------------------
 
 # モデルの構築と評価
-train_and_eval <- function(split, recipe, model, formula) {
+train_and_eval <- function(split, recipe, model, formula, flg_stacking = F) {
 
   options("dplyr.summarise.inform" = F)
 
@@ -729,67 +729,66 @@ train_and_eval <- function(split, recipe, model, formula) {
     add_features_per_category(df.train)
 
 
-  model %>%
+  # モデルの学習
+  fit <- parsnip::fit(model, formula, data = df.train)
 
-    # モデルの学習
-    {
-      model <- (.)
-      parsnip::fit(model, formula, data = df.train)
-    } %>%
+  if(!flg_stacking) {
+    ### 評価 ###
 
-    # 学習済モデルによる予測
-    {
-      fit <- (.)
-      list(
-        train = predict(fit, df.train, type = "numeric")[[1]],
-        test  = predict(fit, df.test,  type = "numeric")[[1]]
+    lst.predicted <- list(
+      train = predict(fit, df.train, type = "numeric")[[1]],
+      test  = predict(fit, df.test,  type = "numeric")[[1]]
+    )
+
+    # 評価指標の一覧を定義
+    metrics <- yardstick::metric_set(
+      yardstick::rmse
+    )
+
+    # train データでモデルを評価
+    df.result.train <- df.train %>%
+      dplyr::mutate(
+        predicted = lst.predicted$train
+      ) %>%
+      metrics(
+        truth    = y,
+        estimate = predicted
+      ) %>%
+      dplyr::select(-.estimator) %>%
+      dplyr::mutate(
+        .metric = stringr::str_c("train", .metric, sep = "_")
+      ) %>%
+      tidyr::spread(key = .metric, value = .estimate)
+
+    # test データでモデルを評価
+    df.result.test <- df.test %>%
+      dplyr::mutate(
+        predicted = lst.predicted$test
+      ) %>%
+      metrics(
+        truth    = log(y + 1),
+        estimate = predicted
+      ) %>%
+      dplyr::select(-.estimator) %>%
+      dplyr::mutate(
+        .metric = stringr::str_c("test", .metric, sep = "_")
+      ) %>%
+      tidyr::spread(key = .metric, value = .estimate)
+
+    dplyr::bind_cols(
+      df.result.train,
+      df.result.test
+    )
+  } else {
+    ### 予測 ###
+
+    df.test %>%
+      dplyr::mutate(predicted = predict(fit, df.test,  type = "numeric")[[1]]) %>%
+      dplyr::select(
+        id,
+        predicted
       )
-    } %>%
-
-    # 評価
-    {
-      lst.predicted <- (.)
-
-      # 評価指標の一覧を定義
-      metrics <- yardstick::metric_set(
-        yardstick::rmse
-      )
-
-      # train データでモデルを評価
-      df.result.train <- df.train %>%
-        dplyr::mutate(
-          predicted = lst.predicted$train
-        ) %>%
-        metrics(
-          truth    = y,
-          estimate = predicted
-        ) %>%
-        dplyr::select(-.estimator) %>%
-        dplyr::mutate(
-          .metric = stringr::str_c("train", .metric, sep = "_")
-        ) %>%
-        tidyr::spread(key = .metric, value = .estimate)
-
-      # test データでモデルを評価
-      df.result.test <- df.test %>%
-        dplyr::mutate(
-          predicted = lst.predicted$test
-        ) %>%
-        metrics(
-          truth    = log(y + 1),
-          estimate = predicted
-        ) %>%
-        dplyr::select(-.estimator) %>%
-        dplyr::mutate(
-          .metric = stringr::str_c("test", .metric, sep = "_")
-        ) %>%
-        tidyr::spread(key = .metric, value = .estimate)
-
-      dplyr::bind_cols(
-        df.result.train,
-        df.result.test
-      )
-    }
+  }
 }
 
 
