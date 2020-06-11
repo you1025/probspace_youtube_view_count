@@ -802,6 +802,15 @@ get_dummies <- function(data) {
     recipes::juice()
 }
 
+add_interactions <- function(data, formula) {
+  recipe <- recipes::recipe(y ~ ., data) %>%
+    recipes::step_dummy(special_segment, one_hot = T) %>%
+    recipes::step_dummy(recipes::all_nominal(), one_hot = T) %>%
+    recipes::step_interact(terms = formula, sep = "__x__") %>%
+    recipes::prep(training = data) %>%
+    recipes::juice()
+}
+
 # タグの合計カウントを追加(bin counting の一種？)
 add_tag_counts <- function(target_data, train_data) {
   # カウント辞書の作成
