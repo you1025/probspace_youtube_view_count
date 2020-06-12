@@ -5,7 +5,7 @@ library(furrr)
 options("dplyr.summarise.inform" = F)
 
 source("models/LR/functions_LR.R", encoding = "utf-8")
-source("models/Ensemble/Stacking/functions_Stacking.R", encoding = "utf-8")
+source("models/Ensemble/Stacking/LR/functions_Stacking_LR.R", encoding = "utf-8")
 
 # Data Load ---------------------------------------------------------------
 

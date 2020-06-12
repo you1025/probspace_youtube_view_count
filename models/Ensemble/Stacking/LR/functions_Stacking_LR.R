@@ -1,3 +1,4 @@
+source("models/Ensemble/Stacking/functions_Stacking.R", encoding = "utf-8")
 
 train_and_predict <- function(split, recipe, model, formula) {
 
