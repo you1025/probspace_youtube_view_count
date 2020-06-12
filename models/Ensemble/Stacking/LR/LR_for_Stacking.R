@@ -92,11 +92,10 @@ system.time({
   # 訓練データに対する予測値の算出
   df.predicted.train <- furrr::future_map_dfr(
     df.cv$splits,
-    train_and_eval,
+    train_and_predict,
     recipe = recipe,
     model = model,
     formula = formula,
-    flg_stacking = T,
     .options = furrr::future_options(seed = 1025L)
   ) %>%
     dplyr::arrange(id)

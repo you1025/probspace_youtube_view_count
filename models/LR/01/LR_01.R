@@ -137,4 +137,3 @@ system.time({
       test_rmse
     )
 })
-df.results
