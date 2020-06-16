@@ -79,7 +79,7 @@ recipe <- create_recipe(df.train_data)
 
     # ファイル名
     filename <- stringr::str_c(
-      "LR",
+      "SVM",
       lubridate::now(tz = "Asia/Tokyo") %>% format("%Y%m%dT%H%M%S"),
       sep = "_"
     ) %>%
