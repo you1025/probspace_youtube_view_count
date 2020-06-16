@@ -33,7 +33,7 @@ library(furrr)
 library(keras)
 #keras::use_session_with_seed(1025)
 
-source("models/NN_01/functions.R", encoding = "utf-8")
+source("models_old/NN_01/functions.R", encoding = "utf-8")
 
 # Data Load ---------------------------------------------------------------
 
