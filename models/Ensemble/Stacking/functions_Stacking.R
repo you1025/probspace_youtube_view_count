@@ -15,10 +15,10 @@ save_predicts <- function(model_name, preds_train, preds_test) {
   dir.create(dirpath)
 
   # 訓練データの書き出し
-  write_file(preds_train, dirpath, yyyymmddThhmmss, "LR_train")
+  write_file(preds_train, dirpath, yyyymmddThhmmss, stringr::str_c(model_name, "train", sep = "_"))
 
   # テストデータの書き出し
-  write_file(preds_test, dirpath, yyyymmddThhmmss, "LR_test")
+  write_file(preds_test, dirpath, yyyymmddThhmmss, stringr::str_c(model_name, "test", sep = "_"))
 }
 
 write_file <- function(data, dirpath, yyyymmddThhmmss, file_prefix) {
