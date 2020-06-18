@@ -61,7 +61,7 @@ library(tidyverse)
 library(tidymodels)
 library(furrr)
 
-source("models/RF_01/functions.R", encoding = "utf-8")
+source("models_old/RF_01/functions.R", encoding = "utf-8")
 
 # Data Load ---------------------------------------------------------------
 
