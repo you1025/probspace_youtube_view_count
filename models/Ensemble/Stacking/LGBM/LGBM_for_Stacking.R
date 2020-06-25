@@ -52,6 +52,31 @@ system.time({
     + published_year_max_y
   )
 
+  # hyper_parameters.deep <- list(
+  #   learning_rate    = 0.01,
+  #   max_depth        = 12,
+  #   num_leaves       = 39,
+  #   min_data_in_leaf = 28,
+  #   feature_fraction = 0.9652174,
+  #   bagging_freq     = 1,
+  #   bagging_fraction = 0.7956522,
+  #   lambda_l1        = 0.735,
+  #   lambda_l2        = 0.825
+  # )
+  hyper_parameters.shallow <- list(
+    learning_rate    = 0.01,
+    max_depth        = 5,
+    num_leaves       = 19,
+    min_data_in_leaf = 26,
+    feature_fraction = 0.9400000,
+    bagging_freq     = 1,
+    bagging_fraction = 0.8357143,
+    lambda_l1        = 0.7857143,
+    lambda_l2        = 0.8250000
+  )
+  hyper_parameters <- hyper_parameters.shallow
+
+
   # seed の生成
   set.seed(1025)
   seeds <- sample(1:10000, size = 10, replace = F)
@@ -66,6 +91,7 @@ system.time({
         df.cv$splits,
         train_and_predict,
         recipe = recipe,
+        hyper_parameters,
         formula = formula,
         seed = seed,
         .options = furrr::future_options(seed = 1025L)
@@ -162,14 +188,14 @@ system.time({
           metric        = "rmse",
 
           # user defined
-          max_depth        = 12,
-          num_leaves       = 39,
-          min_data_in_leaf = 28,
-          feature_fraction = 0.9652174,
-          bagging_freq     = 1,
-          bagging_fraction = 0.7956522,
-          lambda_l1        = 0.735,
-          lambda_l2        = 0.825,
+          max_depth        = hyper_parameters$max_depth,
+          num_leaves       = hyper_parameters$num_leaves,
+          min_data_in_leaf = hyper_parameters$min_data_in_leaf,
+          feature_fraction = hyper_parameters$feature_fraction,
+          bagging_freq     = hyper_parameters$bagging_freq,
+          bagging_fraction = hyper_parameters$bagging_fraction,
+          lambda_l1        = hyper_parameters$lambda_l1,
+          lambda_l2        = hyper_parameters$lambda_l2,
           
           seed = 1234
         ),

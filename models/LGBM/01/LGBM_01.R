@@ -7,7 +7,8 @@
 # train_rmse: 0.5604068, test_rmse: 0.8047911 - max_depth: 12
 # train_rmse: 0.5805166, test_rmse: 0.8044053 - num_leaves: 39
 # train_rmse: 0.5888912, test_rmse: 0.8017221 - feature_fraction: 0.9652174
-# train_rmse: xxxxxxxxx, test_rmse: xxxxxxxxx - xxx
+
+# train_rmse: xxxxxxxxx, test_rmse: xxxxxxxxx - max_depth: 5
 # train_rmse: xxxxxxxxx, test_rmse: xxxxxxxxx - xxx
 # train_rmse: xxxxxxxxx, test_rmse: xxxxxxxxx - xxx
 # train_rmse: xxxxxxxxx, test_rmse: xxxxxxxxx - xxx
@@ -43,17 +44,17 @@ recipe <- create_recipe(df.train_data)
 df.grid.params <- tibble(
   learning_rate = 0.01,
 
-  max_depth = 12,
-  num_leaves = 39,
-  min_data_in_leaf = 28,
+  max_depth = 5,
+  num_leaves = 19,
+  min_data_in_leaf = 26,
 
-  feature_fraction = 0.9652174,
+  feature_fraction = 0.9400000,
 
   bagging_freq = 1,
-  bagging_fraction = 0.7956522,
+  bagging_fraction = 0.8357143,
 
-  lambda_l1 = 0.735,
-  lambda_l2 = 0.825
+  lambda_l1 = 0.7857143,
+  lambda_l2 = 0.8250000
 )
 df.grid.params
 

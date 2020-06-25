@@ -1,6 +1,6 @@
 source("models/Ensemble/Stacking/functions_Stacking.R", encoding = "utf-8")
 
-train_and_predict <- function(split, recipe, model, formula, seed) {
+train_and_predict <- function(split, recipe, hyper_parameters, formula, seed) {
 
   options("dplyr.summarise.inform" = F)
 
@@ -84,14 +84,14 @@ train_and_predict <- function(split, recipe, model, formula, seed) {
       metric        = "rmse",
 
       # user defined
-      max_depth        = 12,
-      num_leaves       = 39,
-      min_data_in_leaf = 28,
-      feature_fraction = 0.9652174,
-      bagging_freq     = 1,
-      bagging_fraction = 0.7956522,
-      lambda_l1        = 0.735,
-      lambda_l2        = 0.825,
+      max_depth        = hyper_parameters$max_depth,
+      num_leaves       = hyper_parameters$num_leaves,
+      min_data_in_leaf = hyper_parameters$min_data_in_leaf,
+      feature_fraction = hyper_parameters$feature_fraction,
+      bagging_freq     = hyper_parameters$bagging_freq,
+      bagging_fraction = hyper_parameters$bagging_fraction,
+      lambda_l1        = hyper_parameters$lambda_l1,
+      lambda_l2        = hyper_parameters$lambda_l2,
 
       seed = seed
     ),
@@ -101,7 +101,7 @@ train_and_predict <- function(split, recipe, model, formula, seed) {
     valids = list(valid = lst.train_valid_test$train.dvalid),
 
     # 木の数など
-    learning_rate         = 0.01,
+    learning_rate         = hyper_parameters$learning_rate,
     nrounds               = 20000,
     early_stopping_rounds = 200,
     verbose = -1,
