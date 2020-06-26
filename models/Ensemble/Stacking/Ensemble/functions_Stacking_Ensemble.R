@@ -93,6 +93,12 @@ load_stacking_train_data <- function() {
     dplyr::left_join(
       readr::read_csv("models/Ensemble/Stacking/use_y_histories/output/20200627T025207_with_impute/avg_y_from_recents_train_20200627T025207.csv"),
       by = "id"
+    ) %>%
+
+    # タグポイント
+    dplyr::left_join(
+      readr::read_csv("models/Ensemble/Stacking/tag_points/output/20200627T053401/tag_points_train_20200627T053401.csv"),
+      by = "id"
     )
 }
 
@@ -183,6 +189,12 @@ load_stacking_test_data <- function() {
     # 直近の平均値(y)
     dplyr::left_join(
       readr::read_csv("models/Ensemble/Stacking/use_y_histories/output/20200627T025207_with_impute/avg_y_from_recents_test_20200627T025207.csv"),
+      by = "id"
+    ) %>%
+
+    # タグポイント
+    dplyr::left_join(
+      readr::read_csv("models/Ensemble/Stacking/tag_points/output/20200627T053401/tag_points_test_20200627T053401.csv"),
       by = "id"
     )
 }
