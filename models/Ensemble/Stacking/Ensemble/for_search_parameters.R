@@ -18,7 +18,6 @@ library(tidymodels)
 source("models/Ensemble/Stacking/Ensemble/functions_Stacking_Ensemble.R", encoding = "utf-8")
 
 df.train_data <- load_stacking_train_data()
-df.test_data  <- load_stacking_test_data()
 
 df.cv <- rsample::vfold_cv(df.train_data, v = 5, strata = "y")
 

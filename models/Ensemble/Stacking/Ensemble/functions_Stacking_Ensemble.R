@@ -87,6 +87,12 @@ load_stacking_train_data <- function() {
       readr::read_csv("models/Ensemble/Stacking/LGBM/output/20200626T033957_deep/LGBM_train_20200626T033957.csv") %>%
         dplyr::rename(LGBM.deep = predicted),
       by = "id"
+    ) %>%
+
+    # 直近の平均値(y)
+    dplyr::left_join(
+      readr::read_csv("models/Ensemble/Stacking/use_y_histories/output/20200627T025207_with_impute/avg_y_from_recents_train_20200627T025207.csv"),
+      by = "id"
     )
 }
 
@@ -171,6 +177,12 @@ load_stacking_test_data <- function() {
     dplyr::left_join(
       readr::read_csv("models/Ensemble/Stacking/LGBM/output/20200626T033957_deep/LGBM_test_20200626T033957.csv") %>%
         dplyr::rename(LGBM.deep = predicted),
+      by = "id"
+    ) %>%
+
+    # 直近の平均値(y)
+    dplyr::left_join(
+      readr::read_csv("models/Ensemble/Stacking/use_y_histories/output/20200627T025207_with_impute/avg_y_from_recents_test_20200627T025207.csv"),
       by = "id"
     )
 }
