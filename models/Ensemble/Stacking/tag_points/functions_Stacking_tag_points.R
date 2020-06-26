@@ -56,7 +56,7 @@ make_tag_points <- function(data, tag_dict) {
   data %>%
 
     # タグポイント項目の追加
-    dplyr::mutate(tag_point = v.tag_points) %>%
+    dplyr::mutate(tag_point = ifelse(is.na(v.tag_points), 0, v.tag_points)) %>%
 
     dplyr::select(
       id,
