@@ -182,13 +182,6 @@ create_feature_engineerging_recipe <- function(data) {
         scale = T
       )$x[,1],
 
-      # # Special Segment
-      # special_segment = dplyr::case_when(
-      #   ratings_disabled  ~ "ratings_disabled",
-      #   comment_count < 4 ~ "ratings_abled_low_comments",
-      #   T                 ~ "others"
-      # ) %>%
-      #   factor(levels = c("others", "ratings_disabled", "ratings_abled_low_comments"))
     )
 }
 
