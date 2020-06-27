@@ -9,8 +9,10 @@ source("models/Ensemble/Stacking/LR/functions_Stacking_LR.R", encoding = "utf-8"
 
 # Data Load ---------------------------------------------------------------
 
-df.train_data <- load_train_data("data/01.input/train_data.csv") %>% clean()
-df.test_data  <- load_test_data("data/01.input/test_data.csv")   %>% clean()
+df.train_data <- load_train_data("data/01.input/train_data.csv") %>% clean() %>%
+  add_extra_features_train()
+df.test_data  <- load_test_data("data/01.input/test_data.csv")   %>% clean() %>%
+  add_extra_features_test()
 
 # for Cross-Validation
 df.cv <- create_cv(df.train_data)
@@ -31,8 +33,8 @@ df.test  <- recipes::bake(trained_recipe, new_data = df.test_data) %>%
 
 model <- parsnip::linear_reg(
   mode = "regression",
-  penalty = 0.00001,
-  mixture = 0.9666667
+  penalty = 0.0001,
+  mixture = 0.9571429
 ) %>%
   parsnip::set_engine(engine = "glmnet")
 
@@ -85,6 +87,12 @@ system.time({
       + diff_comments_disabled_mean_dislikes
       + published_year_median_likes
       + diff_published_year_mean_dislikes
+      + tag_point
+      + weighted_avg_recent_y
+      + flg_low_y_1000
+      + flg_low_y_5000
+      + flg_low_y_10000
+      + flg_low_y_30000
     )
   )
 
