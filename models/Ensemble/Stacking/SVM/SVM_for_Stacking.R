@@ -9,8 +9,10 @@ source("models/Ensemble/Stacking/SVM/functions_Stacking_SVM.R", encoding = "utf-
 
 # Data Load ---------------------------------------------------------------
 
-df.train_data <- load_train_data("data/01.input/train_data.csv") %>% clean()
-df.test_data  <- load_test_data("data/01.input/test_data.csv")   %>% clean()
+df.train_data <- load_train_data("data/01.input/train_data.csv") %>% clean() %>%
+  add_extra_features_train()
+df.test_data  <- load_test_data("data/01.input/test_data.csv")   %>% clean() %>%
+  add_extra_features_test()
 
 # for Cross-Validation
 df.cv <- create_cv(df.train_data)
@@ -33,9 +35,9 @@ df.test  <- recipes::bake(trained_recipe, new_data = df.test_data) %>%
 
 model <- parsnip::svm_rbf(
   mode = "regression",
-  cost = 1.086735,
-  rbf_sigma = 0.05011872,
-  margin = 0.1233333
+  cost = 2.566852,
+  rbf_sigma = 0.02511886,
+  margin = 0.137
 ) %>%
   parsnip::set_engine(engine = "kernlab")
 
