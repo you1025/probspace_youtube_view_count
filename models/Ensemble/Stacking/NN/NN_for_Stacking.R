@@ -4,13 +4,15 @@ library(furrr)
 library(keras)
 
 source("models/NN/functions_NN.R", encoding = "utf-8")
-source("models/NN/01/functions.R", encoding = "utf-8")
+source("models/NN/02/functions.R", encoding = "utf-8")
 source("models/Ensemble/Stacking/NN/functions_Stacking_NN.R", encoding = "utf-8")
 
 # Data Load ---------------------------------------------------------------
 
-df.train_data <- load_train_data("data/01.input/train_data.csv") %>% clean()
-df.test_data  <- load_test_data("data/01.input/test_data.csv")   %>% clean()
+df.train_data <- load_train_data("data/01.input/train_data.csv") %>% clean() %>%
+  add_extra_features_train()
+df.test_data  <- load_test_data("data/01.input/test_data.csv")   %>% clean() %>%
+  add_extra_features_test()
 
 # for Cross-Validation
 df.cv <- create_cv(df.train_data)
@@ -26,8 +28,8 @@ future::plan(future::multisession(workers = 5))
 system.time({
 
   # パラメータ定義
-  # low-layers
-  params.low <- list(
+  # shallow-layers
+  params.shallow <- list(
     layers = 2,
     units = 512,
     activation = "relu",
@@ -36,8 +38,8 @@ system.time({
     dropout_rate = 0.06,
     batch_size = 64
   )
-  # high-layers
-  params.high <- list(
+  # deep-layers
+  params.deep <- list(
     layers = 7,
     units = 512,
     activation = "relu",
@@ -46,7 +48,7 @@ system.time({
     dropout_rate = 0.027,
     batch_size = 64
   )
-  params <- params.high
+  params <- params.deep
 
   set.seed(1025)
   seeds <- sample(1:10000, size = 5, replace = F)
