@@ -7,8 +7,10 @@ source("models/Ensemble/Stacking/RF/functions_Stacking_RF.R", encoding = "utf-8"
 
 # Data Load ---------------------------------------------------------------
 
-df.train_data <- load_train_data("data/01.input/train_data.csv") %>% clean()
-df.test_data  <- load_test_data("data/01.input/test_data.csv")   %>% clean()
+df.train_data <- load_train_data("data/01.input/train_data.csv") %>% clean() %>%
+  add_extra_features_train()
+df.test_data  <- load_test_data("data/01.input/test_data.csv")   %>% clean() %>%
+  add_extra_features_test()
 
 # for Cross-Validation
 df.cv <- create_cv(df.train_data)
@@ -35,8 +37,8 @@ model <- parsnip::rand_forest(
 ) %>%
   parsnip::set_engine(
     engine = "ranger",
-#    max.depth = 16,  # low
-    max.depth = 26, # high
+#    max.depth = 16,  # shallow
+    max.depth = 26,  # deep
     num.threads = 8,
     seed = NULL
   )
@@ -81,6 +83,7 @@ system.time({
     + flg_japanese_mean_comment_count
     + comments_ratings_disabled_japanese_sd_y
     + comments_ratings_disabled_japanese_sd_likes
+    + weighted_avg_recent_y
   )
 
   # seed の生成
