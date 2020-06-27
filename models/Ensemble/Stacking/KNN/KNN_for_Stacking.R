@@ -9,8 +9,10 @@ source("models/Ensemble/Stacking/KNN/functions_Stacking_KNN.R", encoding = "utf-
 
 # Data Load ---------------------------------------------------------------
 
-df.train_data <- load_train_data("data/01.input/train_data.csv") %>% clean()
-df.test_data  <- load_test_data("data/01.input/test_data.csv")   %>% clean()
+df.train_data <- load_train_data("data/01.input/train_data.csv") %>% clean() %>%
+  add_extra_features_train()
+df.test_data  <- load_test_data("data/01.input/test_data.csv")   %>% clean() %>%
+  add_extra_features_test()
 
 # for Cross-Validation
 df.cv <- create_cv(df.train_data)
@@ -33,7 +35,7 @@ df.test  <- recipes::bake(trained_recipe, new_data = df.test_data) %>%
 
 model <- parsnip::nearest_neighbor(
   mode = "regression",
-  neighbors = 20
+  neighbors = 25
 ) %>%
   parsnip::set_engine(engine = "kknn")
 
@@ -74,6 +76,10 @@ system.time({
     + published_year_mean_y
     + flg_japanese_mean_y
     + flg_japanese_median_y
+    + avg_recent_y
+    + flg_low_y_1000
+    + flg_low_y_10000
+    + flg_low_y_30000
   )
 
 
