@@ -17,74 +17,74 @@ load_stacking_train_data <- function() {
 
     # LinearRegression
     dplyr::left_join(
-      readr::read_csv("models/Ensemble/Stacking/LR/output/20200613T002320/LR_train_20200613T002320.csv") %>%
+      readr::read_csv("models/Ensemble/Stacking/LR/output/20200628T015943/LR_train_20200628T015943.csv") %>%
         dplyr::rename(LR = predicted),
       by = "id"
     ) %>%
 
     # K-NearestNeighbor
     dplyr::left_join(
-      readr::read_csv("models/Ensemble/Stacking/KNN/output/20200613T001924/KNN_train_20200613T001924.csv") %>%
+      readr::read_csv("models/Ensemble/Stacking/KNN/output/20200628T025407/KNN_train_20200628T025407.csv") %>%
         dplyr::rename(KNN = predicted),
       by = "id"
     ) %>%
 
     # SupportVectorMachine
     dplyr::left_join(
-      readr::read_csv("models/Ensemble/Stacking/SVM/output/20200614T034817/SVM_train_20200614T034817.csv") %>%
+      readr::read_csv("models/Ensemble/Stacking/SVM/output/20200628T052909/SVM_train_20200628T052909.csv") %>%
         dplyr::rename(SVM = predicted),
       by = "id"
     ) %>%
 
     # NeuralNetwork
     dplyr::left_join(
-      readr::read_csv("models/Ensemble/Stacking/NN/output/20200617T235331_low/NN_train_20200617T235331.csv") %>%
+      readr::read_csv("models/Ensemble/Stacking/NN/output/20200628T061331_shallow/NN_train_20200628T061331.csv") %>%
         dplyr::rename(NN.shallow = predicted),
       by = "id"
     ) %>%
     dplyr::left_join(
-      readr::read_csv("models/Ensemble/Stacking/NN/output/20200618T004346_high/NN_train_20200618T004346.csv") %>%
+      readr::read_csv("models/Ensemble/Stacking/NN/output/20200628T064248_deep/NN_train_20200628T064248.csv") %>%
         dplyr::rename(NN.deep = predicted),
       by = "id"
     ) %>%
 
     # RandomForest
     dplyr::left_join(
-      readr::read_csv("models/Ensemble/Stacking/RF/output/20200619T035109_low/RF_train_20200619T035109.csv") %>%
+      readr::read_csv("models/Ensemble/Stacking/RF/output/20200628T073152_shallow/RF_train_20200628T073152.csv") %>%
         dplyr::rename(RF.shallow = predicted),
       by = "id"
     ) %>%
     dplyr::left_join(
-      readr::read_csv("models/Ensemble/Stacking/RF/output/20200619T041537_high/RF_train_20200619T041537.csv") %>%
+      readr::read_csv("models/Ensemble/Stacking/RF/output/20200628T075159_deep/RF_train_20200628T075159.csv") %>%
         dplyr::rename(RF.deep = predicted),
       by = "id"
     ) %>%
 
     # XGBoost
     dplyr::left_join(
-      readr::read_csv("models/Ensemble/Stacking/XGB/output/20200623T035104_shallow/XGB_train_20200623T035104.csv") %>%
+      readr::read_csv("models/Ensemble/Stacking/XGB/output/20200628T100320_shallow/XGB_train_20200628T100320.csv") %>%
         dplyr::rename(XGB.shallow = predicted),
       by = "id"
     ) %>%
     dplyr::left_join(
-      readr::read_csv("models/Ensemble/Stacking/XGB/output/20200623T063233_middle/XGB_train_20200623T063233.csv") %>%
+      readr::read_csv("models/Ensemble/Stacking/XGB/output/20200628T103825_middle/XGB_train_20200628T103825.csv") %>%
         dplyr::rename(XGB.middle = predicted),
       by = "id"
     ) %>%
     dplyr::left_join(
-      readr::read_csv("models/Ensemble/Stacking/XGB/output/20200622T235813_deep/XGB_train_20200622T235813.csv") %>%
+      readr::read_csv("models/Ensemble/Stacking/XGB/output/20200628T110513_deep/XGB_train_20200628T110513.csv") %>%
         dplyr::rename(XGB.deep = predicted),
       by = "id"
     ) %>%
 
     # LightGBM
     dplyr::left_join(
-      readr::read_csv("models/Ensemble/Stacking/LGBM/output/20200626T054221_shallow/LGBM_train_20200626T054221.csv") %>%
+      readr::read_csv("models/Ensemble/Stacking/LGBM/output/20200628T121442_shallow/LGBM_train_20200628T121442.csv") %>%
         dplyr::rename(LGBM.shallow = predicted),
       by = "id"
     ) %>%
     dplyr::left_join(
-      readr::read_csv("models/Ensemble/Stacking/LGBM/output/20200626T033957_deep/LGBM_train_20200626T033957.csv") %>%
+      readr::read_csv("models/Ensemble/Stacking/LGBM/output/20200628T124930_deep/LGBM_train_20200628T124930.csv") %>%
         dplyr::rename(LGBM.deep = predicted),
       by = "id"
     ) %>%
@@ -97,7 +97,29 @@ load_stacking_train_data <- function() {
 
     # タグポイント
     dplyr::left_join(
-      readr::read_csv("models/Ensemble/Stacking/tag_points/output/20200627T053401/tag_points_train_20200627T053401.csv"),
+      readr::read_csv("models/Ensemble/Stacking/tag_points/output/20200627T061040/tag_points_train_20200627T061040.csv"),
+      by = "id"
+    ) %>%
+
+    # 低視聴フラグ
+    dplyr::left_join(
+      readr::read_csv("models/Ensemble/Stacking/low_y_flag/output/20200627T230808_1000/low_y_flags_train_20200627T230808.csv") %>%
+        dplyr::rename(low_y_1000 = predicted),
+      by = "id"
+    ) %>%
+    dplyr::left_join(
+      readr::read_csv("models/Ensemble/Stacking/low_y_flag/output/20200627T235238_5000/low_y_flags_train_20200627T235238.csv") %>%
+        dplyr::rename(low_y_5000 = predicted),
+      by = "id"
+    ) %>%
+    dplyr::left_join(
+      readr::read_csv("models/Ensemble/Stacking/low_y_flag/output/20200628T002124_10000/low_y_flags_train_20200628T002124.csv") %>%
+        dplyr::rename(low_y_10000 = predicted),
+      by = "id"
+    ) %>%
+    dplyr::left_join(
+      readr::read_csv("models/Ensemble/Stacking/low_y_flag/output/20200628T005739_30000/low_y_flags_train_20200628T005739.csv") %>%
+        dplyr::rename(low_y_30000 = predicted),
       by = "id"
     )
 }
@@ -114,74 +136,74 @@ load_stacking_test_data <- function() {
 
     # LinearRegression
     dplyr::left_join(
-      readr::read_csv("models/Ensemble/Stacking/LR/output/20200613T002320/LR_test_20200613T002320.csv") %>%
+      readr::read_csv("models/Ensemble/Stacking/LR/output/20200628T015943/LR_test_20200628T015943.csv") %>%
         dplyr::rename(LR = predicted),
       by = "id"
     ) %>%
 
     # K-NearestNeighbor
     dplyr::left_join(
-      readr::read_csv("models/Ensemble/Stacking/KNN/output/20200613T001924/KNN_test_20200613T001924.csv") %>%
+      readr::read_csv("models/Ensemble/Stacking/KNN/output/20200628T025407/KNN_test_20200628T025407.csv") %>%
         dplyr::rename(KNN = predicted),
       by = "id"
     ) %>%
 
     # SupportVectorMachine
     dplyr::left_join(
-      readr::read_csv("models/Ensemble/Stacking/SVM/output/20200614T034817/SVM_test_20200614T034817.csv") %>%
+      readr::read_csv("models/Ensemble/Stacking/SVM/output/20200628T052909/SVM_test_20200628T052909.csv") %>%
         dplyr::rename(SVM = predicted),
       by = "id"
     ) %>%
 
     # NeuralNetwork
     dplyr::left_join(
-      readr::read_csv("models/Ensemble/Stacking/NN/output/20200617T235331_low/NN_test_20200617T235331.csv") %>%
+      readr::read_csv("models/Ensemble/Stacking/NN/output/20200628T061331_shallow/NN_test_20200628T061331.csv") %>%
         dplyr::rename(NN.shallow = predicted),
       by = "id"
     ) %>%
     dplyr::left_join(
-      readr::read_csv("models/Ensemble/Stacking/NN/output/20200618T004346_high/NN_test_20200618T004346.csv") %>%
+      readr::read_csv("models/Ensemble/Stacking/NN/output/20200628T064248_deep/NN_test_20200628T064248.csv") %>%
         dplyr::rename(NN.deep = predicted),
       by = "id"
     ) %>%
 
     # RandomForest
     dplyr::left_join(
-      readr::read_csv("models/Ensemble/Stacking/RF/output/20200619T035109_low/RF_test_20200619T035109.csv") %>%
+      readr::read_csv("models/Ensemble/Stacking/RF/output/20200628T073152_shallow/RF_test_20200628T073152.csv") %>%
         dplyr::rename(RF.shallow = predicted),
       by = "id"
     ) %>%
     dplyr::left_join(
-      readr::read_csv("models/Ensemble/Stacking/RF/output/20200619T041537_high/RF_test_20200619T041537.csv") %>%
+      readr::read_csv("models/Ensemble/Stacking/RF/output/20200628T075159_deep/RF_test_20200628T075159.csv") %>%
         dplyr::rename(RF.deep = predicted),
       by = "id"
     ) %>%
 
     # XGBoost
     dplyr::left_join(
-      readr::read_csv("models/Ensemble/Stacking/XGB/output/20200623T035104_shallow/XGB_test_20200623T035104.csv") %>%
+      readr::read_csv("models/Ensemble/Stacking/XGB/output/20200628T100320_shallow/XGB_test_20200628T100320.csv") %>%
         dplyr::rename(XGB.shallow = predicted),
       by = "id"
     ) %>%
     dplyr::left_join(
-      readr::read_csv("models/Ensemble/Stacking/XGB/output/20200623T063233_middle/XGB_test_20200623T063233.csv") %>%
+      readr::read_csv("models/Ensemble/Stacking/XGB/output/20200628T103825_middle/XGB_test_20200628T103825.csv") %>%
         dplyr::rename(XGB.middle = predicted),
       by = "id"
     ) %>%
     dplyr::left_join(
-      readr::read_csv("models/Ensemble/Stacking/XGB/output/20200622T235813_deep/XGB_test_20200622T235813.csv") %>%
+      readr::read_csv("models/Ensemble/Stacking/XGB/output/20200628T110513_deep/XGB_test_20200628T110513.csv") %>%
         dplyr::rename(XGB.deep = predicted),
       by = "id"
     ) %>%
 
     # LightGBM
     dplyr::left_join(
-      readr::read_csv("models/Ensemble/Stacking/LGBM/output/20200626T054221_shallow/LGBM_test_20200626T054221.csv") %>%
+      readr::read_csv("models/Ensemble/Stacking/LGBM/output/20200628T121442_shallow/LGBM_test_20200628T121442.csv") %>%
         dplyr::rename(LGBM.shallow = predicted),
       by = "id"
     ) %>%
     dplyr::left_join(
-      readr::read_csv("models/Ensemble/Stacking/LGBM/output/20200626T033957_deep/LGBM_test_20200626T033957.csv") %>%
+      readr::read_csv("models/Ensemble/Stacking/LGBM/output/20200628T124930_deep/LGBM_test_20200628T124930.csv") %>%
         dplyr::rename(LGBM.deep = predicted),
       by = "id"
     ) %>%
@@ -194,7 +216,29 @@ load_stacking_test_data <- function() {
 
     # タグポイント
     dplyr::left_join(
-      readr::read_csv("models/Ensemble/Stacking/tag_points/output/20200627T053401/tag_points_test_20200627T053401.csv"),
+      readr::read_csv("models/Ensemble/Stacking/tag_points/output/20200627T061040/tag_points_test_20200627T061040.csv"),
+      by = "id"
+    ) %>%
+
+    # 低視聴フラグ
+    dplyr::left_join(
+      readr::read_csv("models/Ensemble/Stacking/low_y_flag/output/20200627T230808_1000/low_y_flags_test_20200627T230808.csv") %>%
+        dplyr::rename(low_y_1000 = predicted),
+      by = "id"
+    ) %>%
+    dplyr::left_join(
+      readr::read_csv("models/Ensemble/Stacking/low_y_flag/output/20200627T235238_5000/low_y_flags_test_20200627T235238.csv") %>%
+        dplyr::rename(low_y_5000 = predicted),
+      by = "id"
+    ) %>%
+    dplyr::left_join(
+      readr::read_csv("models/Ensemble/Stacking/low_y_flag/output/20200628T002124_10000/low_y_flags_test_20200628T002124.csv") %>%
+        dplyr::rename(low_y_10000 = predicted),
+      by = "id"
+    ) %>%
+    dplyr::left_join(
+      readr::read_csv("models/Ensemble/Stacking/low_y_flag/output/20200628T005739_30000/low_y_flags_test_20200628T005739.csv") %>%
+        dplyr::rename(low_y_30000 = predicted),
       by = "id"
     )
 }

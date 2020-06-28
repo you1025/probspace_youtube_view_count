@@ -47,6 +47,13 @@ model <- parsnip::fit(
   + XGB.deep
   + LGBM.shallow
   + LGBM.deep
+  + tag_point
+  + avg_recent_y
+  + weighted_avg_recent_y
+  + low_y_1000
+  + low_y_5000
+  + low_y_10000
+  + low_y_30000
   ,
   df.train_data
 )
