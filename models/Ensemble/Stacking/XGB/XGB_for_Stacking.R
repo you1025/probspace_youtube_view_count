@@ -7,8 +7,11 @@ source("models/Ensemble/Stacking/XGB/functions_Stacking_XGB.R", encoding = "utf-
 
 # Data Load ---------------------------------------------------------------
 
-df.train_data <- load_train_data("data/01.input/train_data.csv") %>% clean()
-df.test_data  <- load_test_data("data/01.input/test_data.csv")   %>% clean()
+df.train_data <- load_train_data("data/01.input/train_data.csv") %>% clean() %>%
+  add_extra_features_train()
+df.test_data  <- load_test_data("data/01.input/test_data.csv")   %>% clean() %>%
+  add_extra_features_test()
+
 
 # for Cross-Validation
 df.cv <- create_cv(df.train_data)
@@ -27,34 +30,6 @@ df.test  <- recipes::bake(trained_recipe, new_data = df.test_data) %>%
 
 # Model Definition --------------------------------------------------------
 
-# model.deep <- parsnip::boost_tree(
-#   mode = "regression",
-#   learn_rate = 0.01,
-#   trees = 988,
-#   tree_depth = 17,
-#   mtry = 25,
-#   min_n = 5,
-#   sample_size = 0.9,
-#   loss_reduction = 10^(-0.3071429)
-# ) %>%
-#   parsnip::set_engine(
-#     engine = "xgboost",
-#     nthread = 1
-#   )
-model.middle <- parsnip::boost_tree(
-  mode = "regression",
-  learn_rate = 0.01,
-  trees = 1423,
-  tree_depth = 12,
-  mtry = 34,
-  min_n = 2,
-  sample_size = 0.9,
-  loss_reduction = 10^(-0.2633333)
-) %>%
-  parsnip::set_engine(
-    engine = "xgboost",
-    nthread = 1
-  )
 # model.shallow <- parsnip::boost_tree(
 #   mode = "regression",
 #   learn_rate = 0.01,
@@ -69,7 +44,35 @@ model.middle <- parsnip::boost_tree(
 #     engine = "xgboost",
 #     nthread = 1
 #   )
-model <- model.middle
+# model.middle <- parsnip::boost_tree(
+#   mode = "regression",
+#   learn_rate = 0.01,
+#   trees = 1423,
+#   tree_depth = 12,
+#   mtry = 34,
+#   min_n = 2,
+#   sample_size = 0.9,
+#   loss_reduction = 10^(-0.2633333)
+# ) %>%
+#   parsnip::set_engine(
+#     engine = "xgboost",
+#     nthread = 1
+#   )
+model.deep <- parsnip::boost_tree(
+  mode = "regression",
+  learn_rate = 0.01,
+  trees = 988,
+  tree_depth = 17,
+  mtry = 25,
+  min_n = 5,
+  sample_size = 0.9,
+  loss_reduction = 10^(-0.3071429)
+) %>%
+  parsnip::set_engine(
+    engine = "xgboost",
+    nthread = 1
+  )
+model <- model.deep
 
 
 # 並列処理
@@ -99,6 +102,8 @@ system.time({
     + flg_categoryId_high
     + comments_ratings_disabled_japanese
     + diff_published_year_mean_dislikes
+    + tag_point
+    + weighted_avg_recent_y
   )
 
   # seed の生成
