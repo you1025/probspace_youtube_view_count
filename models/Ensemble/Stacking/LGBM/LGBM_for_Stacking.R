@@ -8,8 +8,11 @@ source("models/Ensemble/Stacking/LGBM/functions_Stacking_LGBM.R", encoding = "ut
 
 # Data Load ---------------------------------------------------------------
 
-df.train_data <- load_train_data("data/01.input/train_data.csv") %>% clean()
-df.test_data  <- load_test_data("data/01.input/test_data.csv")   %>% clean()
+df.train_data <- load_train_data("data/01.input/train_data.csv") %>% clean() %>%
+  add_extra_features_train()
+df.test_data  <- load_test_data("data/01.input/test_data.csv")   %>% clean() %>%
+  add_extra_features_test()
+
 
 # for Cross-Validation
 df.cv <- create_cv(df.train_data)
@@ -50,31 +53,33 @@ system.time({
     + flg_comments_ratings_disabled_japanese_low
     + categoryId_max_y
     + published_year_max_y
+    + tag_point
+    + weighted_avg_recent_y
   )
 
-  # hyper_parameters.deep <- list(
+  # hyper_parameters.shallow <- list(
   #   learning_rate    = 0.01,
-  #   max_depth        = 12,
-  #   num_leaves       = 39,
-  #   min_data_in_leaf = 28,
-  #   feature_fraction = 0.9652174,
+  #   max_depth        = 5,
+  #   num_leaves       = 19,
+  #   min_data_in_leaf = 16,
+  #   feature_fraction = 0.9400000,
   #   bagging_freq     = 1,
-  #   bagging_fraction = 0.7956522,
-  #   lambda_l1        = 0.735,
-  #   lambda_l2        = 0.825
+  #   bagging_fraction = 0.8357143,
+  #   lambda_l1        = 0.7857143,
+  #   lambda_l2        = 0.8250000
   # )
-  hyper_parameters.shallow <- list(
+  hyper_parameters.deep <- list(
     learning_rate    = 0.01,
-    max_depth        = 5,
-    num_leaves       = 19,
-    min_data_in_leaf = 26,
-    feature_fraction = 0.9400000,
+    max_depth        = 12,
+    num_leaves       = 39,
+    min_data_in_leaf = 23,
+    feature_fraction = 0.9652174,
     bagging_freq     = 1,
-    bagging_fraction = 0.8357143,
-    lambda_l1        = 0.7857143,
-    lambda_l2        = 0.8250000
+    bagging_fraction = 0.7956522,
+    lambda_l1        = 0.735,
+    lambda_l2        = 0.825
   )
-  hyper_parameters <- hyper_parameters.shallow
+  hyper_parameters <- hyper_parameters.deep
 
 
   # seed の生成
