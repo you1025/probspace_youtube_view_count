@@ -22,6 +22,7 @@ df.data <- dplyr::bind_rows(
   df.test  %>% dplyr::mutate(class = "test")
 ) %>%
   dplyr::select(
+    id,
     class,
     categoryId,
     likes,
@@ -84,7 +85,7 @@ df.data <- dplyr::bind_rows(
       recipes::juice()
   }
 umap.result <- df.data %>%
-  dplyr::select(-class) %>%
+  dplyr::select(-id, -class) %>%
   umap::umap(random_state = 1025)
 
 umap.result$layout %>%
@@ -111,6 +112,7 @@ knn.500 <- umap.result$layout %>%
 df.results <- umap.result$layout %>%
   tibble::as_tibble() %>%
   dplyr::mutate(
+    id = df.data$id,
     class = df.data$class,
     cluster.5   = factor(knn.5$cluster),
     cluster.10  = factor(knn.10$cluster),
@@ -121,13 +123,17 @@ df.results <- umap.result$layout %>%
 
 df.results %>%
   ggplot(aes(V1, V2)) +
-    geom_point(aes(colour = cluster.500), size = 0.5, alpha = 1/7, show.legend = F)
+    geom_point(aes(colour = cluster.5), size = 0.5, alpha = 1/7, show.legend = F)
 
 # データ生成
 df.results.train <- df.results %>%
-  dplyr::filter(class == "train")
+  dplyr::filter(class == "train") %>%
+  dplyr::select(-class) %>%
+  dplyr::select(id, dplyr::everything())
 df.results.test  <- df.results %>%
-  dplyr::filter(class == "test")
+  dplyr::filter(class == "test") %>%
+  dplyr::select(-class) %>%
+  dplyr::select(id, dplyr::everything())
 
 # ファイル書き出し
 save_UMAP(df.results.train, df.results.test)
