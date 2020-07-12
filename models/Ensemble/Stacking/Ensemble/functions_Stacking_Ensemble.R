@@ -121,6 +121,12 @@ load_stacking_train_data <- function() {
       readr::read_csv("models/Ensemble/Stacking/low_y_flag/output/20200628T005739_30000/low_y_flags_train_20200628T005739.csv") %>%
         dplyr::rename(low_y_30000 = predicted),
       by = "id"
+    ) %>%
+
+    # UMAP
+    dplyr::left_join(
+      readr::read_csv("models/Ensemble/Stacking/UMAP/output/20200628T145746/UMAP_train_20200628T145746.csv"),
+      by = "id"
     )
 }
 
@@ -239,6 +245,12 @@ load_stacking_test_data <- function() {
     dplyr::left_join(
       readr::read_csv("models/Ensemble/Stacking/low_y_flag/output/20200628T005739_30000/low_y_flags_test_20200628T005739.csv") %>%
         dplyr::rename(low_y_30000 = predicted),
+      by = "id"
+    ) %>%
+
+    # UMAP
+    dplyr::left_join(
+      readr::read_csv("models/Ensemble/Stacking/UMAP/output/20200628T145746/UMAP_test_20200628T145746.csv"),
       by = "id"
     )
 }

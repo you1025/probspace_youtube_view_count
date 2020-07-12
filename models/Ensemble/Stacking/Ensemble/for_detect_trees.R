@@ -16,18 +16,21 @@ df.train_data %>%
   # formula と同じ項目を選択
   dplyr::select(
     y
-    , LR
-    , KNN
-    , SVM
-    , NN.shallow
-    , NN.deep
-    , RF.shallow
-    , RF.deep
-    , XGB.shallow
-    , XGB.middle
-    , XGB.deep
-    , LGBM.shallow
-    , LGBM.deep
+    ,KNN
+    ,SVM
+    ,NN.shallow
+    ,NN.deep
+    ,RF.shallow
+    ,RF.deep
+    ,XGB.shallow
+    ,XGB.middle
+    ,XGB.deep
+    ,LGBM.shallow
+    ,LGBM.deep
+    ,V1
+    ,V2
+    ,cluster.10
+    ,cluster.100
   ) %>%
 
   {
@@ -45,11 +48,11 @@ df.train_data %>%
       label = y,
 
       eta = 0.01,
-      max_depth = 3,
-      colsample_bytree = 0.6666667,
-      min_child_weight = 11,
-      subsample = 0.7375,
-      gamma = 10^(-0.2895833),
+      max_depth = 4,
+      colsample_bytree = 0.3333333,
+      min_child_weight = 9,
+      subsample = 0.7217391,
+      gamma = 10^(-0.2966667),
 
       nfold = 8,
       nrounds = 5000,

@@ -12,15 +12,15 @@ df.test_data  <- load_stacking_test_data()
 model <- parsnip::boost_tree(
   mode = "regression",
   learn_rate = 0.01,
-  trees = 700,
+  trees = 727,
 
-  tree_depth = 3,
-  mtry = 8,
+  tree_depth = 4,
+  mtry = 5,
 
-  min_n = 11,
-  sample_size = 0.7375,
+  min_n = 9,
+  sample_size = 0.7217391,
 
-  loss_reduction = 10^(-0.2895833)
+  loss_reduction = 10^(-0.2966667)
 ) %>%
   parsnip::set_engine(
     engine = "xgboost",
@@ -35,8 +35,7 @@ model <- parsnip::boost_tree(
 model <- parsnip::fit(
   model,
   y ~
-    LR
-  + KNN
+    KNN
   + SVM
   + NN.shallow
   + NN.deep
@@ -47,13 +46,10 @@ model <- parsnip::fit(
   + XGB.deep
   + LGBM.shallow
   + LGBM.deep
-  + tag_point
-  + avg_recent_y
-  + weighted_avg_recent_y
-  + low_y_1000
-  + low_y_5000
-  + low_y_10000
-  + low_y_30000
+  + V1
+  + V2
+  + cluster.10
+  + cluster.100
   ,
   df.train_data
 )
